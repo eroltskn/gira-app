@@ -1,0 +1,13 @@
+Flask
+joblib
+jsonschema
+marshmallow
+requests
+bugsnag[flask]
+pendulum
+cerberus
+marshmallow
+mysqlclient
+flask-jwt-extended
+flask-migrate
+flask-sqlalchemy
