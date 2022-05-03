@@ -19,8 +19,9 @@ jwt = JWTManager(app)
 from models.models import db
 
 db.init_app(app)
-from models.models import Role, UserRole, User, Issue, Project
 
+from models.models import Role, UserRole, User, Issue, Project,UserProfile
+import models
 migrate = Migrate(app, db)
 
 with app.app_context():

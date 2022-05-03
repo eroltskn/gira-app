@@ -7,7 +7,7 @@ from helper.authentication_helper import validate_request_input
 from helper.format_helper import parse_cerberus_error_messages
 from models.models import User, db
 from schema.error_schema import ErrorResponse
-from schema.user.user_schema import UserAuthPostRequest, \
+from schema.user.user_auth_schema import UserAuthPostRequest, \
     USER_AUTH_POST_REQUEST_SCHEMA, \
     UserAuthResponse
 import numpy as np
