@@ -23,7 +23,6 @@ class UserRole(db.Model):
 
 class UserProfile(db.Model):
     """Data model for user profile ."""
-
     __tablename__ = "user_profile"
     id = db.Column(db.Integer,
                    primary_key=True,
@@ -59,6 +58,157 @@ class UserProfile(db.Model):
         self.last_name = last_name
 
 
+class Role(db.Model):
+    """Data model for role."""
+
+    __tablename__ = "role"
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+    name = db.Column(db.String(45),
+                     index=False,
+                     unique=True,
+                     nullable=False)
+
+    user_role = db.relationship(UserRole,
+                                backref='role',
+                                lazy=True)
+
+
+class Issue(db.Model):
+    """Data model for issue."""
+    __tablename__ = "issue"
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    name = db.Column(db.String(45),
+                     unique=False,
+                     nullable=False)
+
+    description = db.Column(db.String(45),
+                            unique=False,
+                            nullable=False)
+
+    is_deleted = db.Column(db.Boolean,
+                           default=False)
+
+    issue_status_id = db.Column(db.Integer,
+                                db.ForeignKey("issue_status.id"),
+                                nullable=False)
+
+    issue_type_id = db.Column(db.Integer,
+                              db.ForeignKey("issue_type.id"),
+                              nullable=False)
+
+    project_id = db.Column(db.Integer,
+                           db.ForeignKey("project.id"),
+                           nullable=False)
+
+    project = db.relationship("Project",
+                              backref='issue',
+                              lazy=True
+                              )
+    created = db.Column(db.DateTime(timezone=True), default=db.func.current_timestamp(), nullable=False)
+    modified = db.Column(db.DateTime(timezone=True), default=db.func.current_timestamp(),
+                         onupdate=db.func.current_timestamp(), nullable=False)
+
+    def __init__(self, name, description, issue_status_id, project_id, issue_type_id):
+        self.name = name
+        self.description = description
+        self.issue_status_id = issue_status_id
+        self.project_id = project_id
+        self.issue_type_id = issue_type_id
+
+
+class IssueStatus(db.Model):
+    """Data model for role."""
+
+    __tablename__ = "issue_status"
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    name = db.Column(db.String(45),
+                     index=False,
+                     unique=True,
+                     nullable=False)
+
+    issue = db.relationship(Issue,
+                            backref='issue_status',
+                            lazy=True)
+
+
+class IssueType(db.Model):
+    """Data model for role."""
+
+    __tablename__ = "issue_type"
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    name = db.Column(db.String(45),
+                     index=False,
+                     unique=True,
+                     nullable=False)
+
+    issue = db.relationship(Issue,
+                            backref='issue_type',
+                            lazy=True)
+
+
+class Project(db.Model):
+    """Data model for project"""
+
+    __tablename__ = "project"
+
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    name = db.Column(db.String(45),
+                     index=False,
+                     unique=True,
+                     nullable=False)
+
+    issue_count = db.Column(db.Integer,
+                            nullable=True,
+                            default=0)
+
+    assign_to = db.Column(db.Integer,
+                          db.ForeignKey("user.id"),
+                          nullable=False)
+
+    assign_by = db.Column(db.Integer,
+                          db.ForeignKey("user.id"),
+                          nullable=False)
+
+    user_assign_to = db.relationship("User",
+                                     lazy=True,
+                                     foreign_keys="Project.assign_to")
+
+    user_assign_by = db.relationship("User",
+                                     lazy=True,
+                                     foreign_keys="Project.assign_by")
+
+    created = db.Column(db.DateTime(timezone=True),
+                        default=db.func.current_timestamp(),
+                        nullable=False)
+
+    modified = db.Column(db.DateTime(timezone=True),
+                         default=db.func.current_timestamp(),
+                         onupdate=db.func.current_timestamp(),
+                         nullable=False)
+
+    def __init__(self, id=None, name=None, description=None, assign_to=None, assign_by=None):
+        self.id = id
+        self.name = name
+        self.description = description
+        self.id = id
+        self.assign_to = assign_to
+        self.assign_by = assign_by
+
+
 class User(db.Model):
     """Data model for user ."""
 
@@ -86,57 +236,3 @@ class User(db.Model):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-
-
-class Role(db.Model):
-    """Data model for role."""
-
-    __tablename__ = "role"
-    id = db.Column(db.Integer,
-                   primary_key=True,
-                   autoincrement=True)
-    name = db.Column(db.String(45),
-                     index=False,
-                     unique=True,
-                     nullable=False)
-
-    user_role = db.relationship(UserRole,
-                                backref='role',
-                                lazy=True)
-
-
-class Issue(db.Model):
-    """Data model for issue."""
-
-    __tablename__ = "issue"
-    id = db.Column(db.Integer,
-                   primary_key=True,
-                   autoincrement=True)
-
-    name = db.Column(db.String(45),
-                     index=False,
-                     unique=True,
-                     nullable=False)
-
-    project_id = db.Column(db.Integer,
-                           db.ForeignKey("project.id"),
-                           nullable=False)
-
-
-class Project(db.Model):
-    """Data model for project"""
-
-    __tablename__ = "project"
-
-    id = db.Column(db.Integer,
-                   primary_key=True,
-                   autoincrement=True)
-
-    name = db.Column(db.String(45),
-                     index=False,
-                     unique=True,
-                     nullable=False)
-
-    issues = db.relationship(Issue,
-                             backref='project',
-                             lazy=True)
