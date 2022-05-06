@@ -19,7 +19,7 @@ project_update_endpoint = Blueprint('project/update', __name__)
 @validate_request_input
 @jwt_required()
 @requires_gira_role(roles=[1, 2])
-def project_post_method(project_id):
+def project_update_method(project_id):
     try:
         """ Request body payload """
         payload = request.json
@@ -40,9 +40,6 @@ def project_post_method(project_id):
 
         if payload_model.name:
             project.name = payload_model.name
-
-        if payload_model.assign_to:
-            project.description = payload_model.assign_to
 
         db.session.commit()
 

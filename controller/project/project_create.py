@@ -38,8 +38,7 @@ def project_post_method():
             return jsonify(error), 400
 
         project = Project(name=payload_model.name,
-                          assign_by=payload_model.assign_by,
-                          assign_to=payload_model.assign_by
+                          created_by=payload_model.created_by,
                           )
 
         db.session.add(project)
