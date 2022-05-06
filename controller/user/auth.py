@@ -46,15 +46,14 @@ def login():
 
             return jsonify(error), 401
 
-        result_dict = result.__dict__
         additional_claims = {}
 
-        if 'user_roles' in result_dict:
-            user_roles = result_dict['user_roles']
-            roles = np.array([user_role.__dict__['role_id'] for user_role in user_roles]).flatten().tolist()
-            additional_claims['roles'] = roles
+        user_roles = result.user_roles
+        roles = np.array([user_role.__dict__['role_id'] for user_role in user_roles]).flatten().tolist()
+        additional_claims['roles'] = roles
+        additional_claims['user_id'] = result.id
 
-        gira_token = create_access_token(result_dict['username'], additional_claims=additional_claims)
+        gira_token = create_access_token(payload_model.username, additional_claims=additional_claims)
 
         response_model = UserAuthResponse(gira_token=gira_token)
 

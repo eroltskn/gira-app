@@ -1,14 +1,12 @@
-import logging
 import json
 from werkzeug.exceptions import BadRequest
-
 from functools import wraps
 from flask import jsonify
 from flask import request
-from flask_jwt_extended import get_jwt
-from schema.error_schema import ErrorResponse
 
-logger = logging.getLogger(__name__)
+import jwt
+from schema.error_schema import ErrorResponse
+from constant import Constant as CONSTANT
 
 
 def requires_gira_role(roles):
@@ -16,11 +14,30 @@ def requires_gira_role(roles):
         @wraps(func)
         def wrapper(*args, **kwargs):
             try:
-                claims = get_jwt()
+
+                token_raw = request.headers['AUTHORIZATION']
+                token = token_raw.split()[1]
+                user_data = jwt.decode(token, CONSTANT.JWT_SECRET_KEY, algorithms='HS256')
+
+                roles_token = user_data['roles']
+
+                """ reject if user doesn't have permission  """
+                if not any(role in roles_token for role in roles):
+                    message_model = ErrorResponse(
+                        errors=[
+                            'You don\'t have authorization to access this.'
+                        ])
+                    message = message_model.__dict__
+
+                    return jsonify(message), 401
 
                 return func(*args, **kwargs)
-            except Exception:
-                return jsonify('not allowed'), 400
+            except Exception as e:
+                error_model = ErrorResponse(errors=[
+                    'Authentication error.'
+                ])
+                error = error_model.__dict__
+                return jsonify(error), 400
 
         return wrapper
 

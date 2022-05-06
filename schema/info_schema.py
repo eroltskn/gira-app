@@ -14,7 +14,7 @@ class InfoResponseSchema(Schema):
 
 
 class InfoResponse(object):
-    def __init__(self,  errors=False, data=False):
+    def __init__(self, errors=False, data=False):
         self.info = defaultdict(dict)
 
         self.info['errors'] = errors
