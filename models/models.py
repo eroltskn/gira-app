@@ -178,21 +178,13 @@ class Project(db.Model):
                             nullable=True,
                             default=0)
 
-    assign_to = db.Column(db.Integer,
-                          db.ForeignKey("user.id"),
-                          nullable=False)
+    created_by = db.Column(db.Integer,
+                           db.ForeignKey("user.id"),
+                           nullable=False)
 
-    assign_by = db.Column(db.Integer,
-                          db.ForeignKey("user.id"),
-                          nullable=False)
-
-    user_assign_to = db.relationship("User",
-                                     lazy=True,
-                                     foreign_keys="Project.assign_to")
-
-    user_assign_by = db.relationship("User",
-                                     lazy=True,
-                                     foreign_keys="Project.assign_by")
+    user = db.relationship("User",
+                           lazy=True,
+                           foreign_keys="Project.created_by")
 
     created = db.Column(db.DateTime(timezone=True),
                         default=db.func.current_timestamp(),
@@ -203,11 +195,10 @@ class Project(db.Model):
                          onupdate=db.func.current_timestamp(),
                          nullable=False)
 
-    def __init__(self, id=None, name=None, description=None, assign_to=None, assign_by=None):
+    def __init__(self, id=None, name=None, created_by=None):
         self.id = id
         self.name = name
-        self.assign_to = assign_to
-        self.assign_by = assign_by
+        self.created_by = created_by
 
 
 class User(db.Model):
@@ -237,3 +228,28 @@ class User(db.Model):
     def __init__(self, username, password):
         self.username = username
         self.password = password
+
+
+class UserProject(db.Model):
+    """Data model for user project."""
+
+    __tablename__ = "user_project"
+    project_id = db.Column(db.Integer,
+                           db.ForeignKey("project.id"),
+                           primary_key=True)
+
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey("user.id"),
+                        primary_key=True)
+
+    user = db.relationship("User",
+                           lazy=True,
+                           foreign_keys="UserProject.user_id")
+
+    project = db.relationship("Project",
+                              lazy=True,
+                              foreign_keys="UserProject.project_id")
+
+    def __init__(self, project_id, user_id):
+        self.project_id = project_id
+        self.user_id = user_id

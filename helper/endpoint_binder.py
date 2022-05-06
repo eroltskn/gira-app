@@ -10,6 +10,7 @@ from controller.issue.issue_delete import issue_delete_endpoint
 from controller.project.project_create import project_create_endpoint
 from controller.project.project_delete import project_delete_endpoint
 from controller.project.project_update import project_update_endpoint
+from controller.project.project_assign_user import project_assign_endpoint
 
 
 def bind_endpoints():
@@ -24,3 +25,4 @@ def bind_endpoints():
     current_app.register_blueprint(project_create_endpoint, url_prefix='/v1/')
     current_app.register_blueprint(project_delete_endpoint, url_prefix='/v1/')
     current_app.register_blueprint(project_update_endpoint, url_prefix='/v1/')
+    current_app.register_blueprint(project_assign_endpoint, url_prefix='/v1/')
