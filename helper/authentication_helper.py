@@ -22,7 +22,7 @@ def requires_gira_role(roles):
                 roles_token = user_data['roles']
 
                 """ reject if user doesn't have permission  """
-                if not any(role in roles for role in roles_token):
+                if not any(role in roles_token for role in roles):
                     message_model = ErrorResponse(
                         errors=[
                             'You don\'t have authorization to access this.'
