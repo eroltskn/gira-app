@@ -171,6 +171,9 @@ class Project(db.Model):
                      unique=True,
                      nullable=False)
 
+    is_deleted = db.Column(db.Boolean,
+                           default=False)
+
     issue_count = db.Column(db.Integer,
                             nullable=True,
                             default=0)
@@ -203,8 +206,6 @@ class Project(db.Model):
     def __init__(self, id=None, name=None, description=None, assign_to=None, assign_by=None):
         self.id = id
         self.name = name
-        self.description = description
-        self.id = id
         self.assign_to = assign_to
         self.assign_by = assign_by
 

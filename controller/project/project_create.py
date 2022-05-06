@@ -1,36 +1,33 @@
 from flask import jsonify, request, Blueprint
-from flask_jwt_extended import create_access_token, jwt_required
-from flask_jwt_extended import get_jwt
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
 from cerberus import Validator
 
 from helper.authentication_helper import validate_request_input, \
     requires_gira_role
 from helper.format_helper import parse_cerberus_error_messages
 
-from models.models import Issue, Project, db
+from models.models import Project, db
 
 from schema.error_schema import ErrorResponse
 from schema.info_schema import InfoResponse
-from schema.issue.issue_schema import ISSUE_POST_REQUEST_SCHEMA
-from schema.issue.issue_schema import IssuePostRequest
-from schema.user.user_register_schema import UserRegisterResponse
+from schema.project.project_create_schema import ProjectPostRequest, \
+    PROJECT_POST_REQUEST_SCHEMA
 
-issue_endpoint = Blueprint('issue', __name__)
+project_create_endpoint = Blueprint('project/create', __name__)
 
 
-@issue_endpoint.route("issue", methods=["POST"])
+@project_create_endpoint.route("project/create", methods=["POST"])
 @validate_request_input
 @jwt_required()
 @requires_gira_role(roles=[1])
-def issue_post_method():
+def project_post_method():
     try:
         """ Request body payload """
         payload = request.json
-        payload_model = IssuePostRequest(payload=payload)
+        payload_model = ProjectPostRequest(payload=payload)
 
         """ Validate payload """
-        validator = Validator(ISSUE_POST_REQUEST_SCHEMA, allow_unknown=False)
+        validator = Validator(PROJECT_POST_REQUEST_SCHEMA, allow_unknown=False)
         validation_result = validator.validate(payload)
 
         if not validation_result:
@@ -40,18 +37,12 @@ def issue_post_method():
 
             return jsonify(error), 400
 
-        issue = Issue(name=payload_model.name,
-                      description=payload_model.description,
-                      issue_status_id=payload_model.issue_status_id,
-                      issue_type_id=payload_model.issue_type_id,
-                      project_id=payload_model.project_id)
+        project = Project(name=payload_model.name,
+                          assign_by=payload_model.assign_by,
+                          assign_to=payload_model.assign_by
+                          )
 
-        db.session.add(issue)
-
-        project = Project.query.get(payload_model.project_id)
-
-        project.issue_count += 1
-
+        db.session.add(project)
         db.session.commit()
 
         """ Result response model """
