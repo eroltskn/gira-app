@@ -21,10 +21,19 @@ project_delete_endpoint = Blueprint('project/delete', __name__)
 @requires_gira_role(roles=[1, 2])
 def project_post_method(project_id):
     try:
+
         project = Project.query.get(project_id)
 
-        project.is_deleted = True
+        """ Check row if row exists """
+        if not project:
+            error_model = ErrorResponse(errors=[
+                'No project found'
+            ])
+            error = error_model.__dict__
 
+            return jsonify(error), 404
+
+        project.is_deleted = True
         db.session.query(Issue).filter(Issue.project_id == project_id).update({'is_deleted': True})
 
         db.session.commit()
