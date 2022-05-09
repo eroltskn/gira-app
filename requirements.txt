@@ -11,3 +11,4 @@ mysqlclient
 flask-jwt-extended
 flask-migrate
 flask-sqlalchemy
+numpy

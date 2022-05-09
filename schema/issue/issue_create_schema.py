@@ -32,12 +32,12 @@ class IssuePostRequest(object):
         if IssueRequestParameters.issue_status_id in payload:
             self.issue_status_id = payload[IssueRequestParameters.issue_status_id]
         else:
-            self.issue_status_id = CONSTANT.issue_status_defult
+            self.issue_status_id = CONSTANT.ISSUE_STATUS_DEFAULT
 
         if IssueRequestParameters.issue_type_id in payload:
             self.issue_type_id = payload[IssueRequestParameters.issue_type_id]
         else:
-            self.issue_type_id = CONSTANT.issue_type_defult
+            self.issue_type_id = CONSTANT.ISSUE_TYPE_DEFAULT
 
     def __str__(self):
         return str(self.__dict__)
