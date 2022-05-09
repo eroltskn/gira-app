@@ -1,6 +1,8 @@
+import logging
 from flask import jsonify, request, Blueprint
 from flask_jwt_extended import jwt_required
 from cerberus import Validator
+from bugsnag.handlers import BugsnagHandler
 
 from helper.authentication_helper import validate_request_input, \
     requires_gira_role
@@ -18,6 +20,12 @@ from schema.issue.issue_get_schema import IssueGetResponse
 from schema.issue.issue_update_schema import IssuePatchRequest, ISSUE_PATCH_REQUEST_SCHEMA
 
 issue_api_endpoint = Blueprint('issue', __name__)
+
+logger = logging.getLogger(__name__)
+handler = BugsnagHandler()
+
+handler.setLevel(logging.ERROR)
+logger.addHandler(handler)
 
 
 @issue_api_endpoint.route("issue/<issue_id>", methods=["GET"])
@@ -58,6 +66,7 @@ def issue_get_method(issue_id):
     except Exception as e:
         error_model = ErrorResponse(errors='unknown error')
         error = error_model.__dict__
+        logger.error(str(e))
 
         return jsonify(error), 500
 
@@ -101,6 +110,7 @@ def issue_post_method():
     except Exception as e:
         error_model = ErrorResponse(errors='unknown error')
         error = error_model.__dict__
+        logger.error(str(e))
 
         return jsonify(error), 500
 
@@ -151,6 +161,7 @@ def issue_patch_method(issue_id):
     except Exception as e:
         error_model = ErrorResponse(errors='unknown error')
         error = error_model.__dict__
+        logger.error(str(e))
 
         return jsonify(error), 500
 
@@ -173,8 +184,6 @@ def issue_delete_method(issue_id):
 
             return jsonify(error), 404
 
-        project = Project.query.get(issue.project_id)
-
         # soft deletion
         issue.is_deleted = True
 
@@ -185,9 +194,10 @@ def issue_delete_method(issue_id):
 
         auth_response = response_model.__dict__
 
-        return jsonify(auth_response), 200
+        return jsonify(auth_response), 204
     except Exception as e:
         error_model = ErrorResponse(errors='unknown error')
         error = error_model.__dict__
+        logger.error(str(e))
 
         return jsonify(error), 500
