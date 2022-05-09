@@ -7,7 +7,7 @@ class Constant(object):
 
     JWT_SECRET_KEY = 'tobeadded'
 
-    issue_type_defult = 1
-    issue_status_defult = 1
+    ISSUE_TYPE_DEFAULT = 1
+    ISSUE_STATUS_DEFAULT = 1
 
 

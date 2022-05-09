@@ -174,9 +174,6 @@ class Project(db.Model):
     is_deleted = db.Column(db.Boolean,
                            default=False)
 
-    issue_count = db.Column(db.Integer,
-                            nullable=True,
-                            default=0)
 
     created_by = db.Column(db.Integer,
                            db.ForeignKey("user.id"),
