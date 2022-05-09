@@ -1,6 +1,11 @@
+import logging
+from bugsnag.handlers import BugsnagHandler
+
 from flask import jsonify, request, Blueprint
 from flask_jwt_extended import create_access_token
 from cerberus import Validator
+from scipy.optimize.tnc import CONSTANT
+
 from helper.authentication_helper import validate_request_input
 from helper.format_helper import parse_cerberus_error_messages
 from models.models import User, UserRole, UserProfile, db
@@ -10,6 +15,12 @@ from schema.user.user_register_schema import UserRegisterResponse, \
     UserRegisterPostRequest
 
 user_register_endpoint = Blueprint('register', __name__)
+
+logger = logging.getLogger(__name__)
+handler = BugsnagHandler()
+
+handler.setLevel(logging.ERROR)
+logger.addHandler(handler)
 
 
 @user_register_endpoint.route("register", methods=["POST"])
@@ -45,12 +56,12 @@ def login():
 
         db.session.add(user_profile)
         user_role = UserRole(user_id=user.id,
-                             role_id=1)
+                             role_id=CONSTANT.USER_DEFAULT_ROLES)
 
         db.session.add(user_role)
         db.session.commit()
 
-        gira_token = create_access_token(payload_model.username, additional_claims={'roles': [1]})
+        gira_token = create_access_token(payload_model.username, additional_claims={'roles': CONSTANT.USER_DEFAULT_ROLES})
 
         response_model = UserRegisterResponse(gira_token=gira_token)
 
@@ -60,5 +71,6 @@ def login():
     except Exception as e:
         error_model = ErrorResponse(errors='unknown error')
         error = error_model.__dict__
+        logger.error(str(e))
 
         return jsonify(error), 500

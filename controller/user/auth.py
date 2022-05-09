@@ -1,6 +1,9 @@
+import logging
 from flask import jsonify, request, Blueprint
 from flask_jwt_extended import create_access_token
 from cerberus import Validator
+from bugsnag.handlers import BugsnagHandler
+
 from sqlalchemy import and_
 
 from helper.authentication_helper import validate_request_input
@@ -13,6 +16,12 @@ from schema.user.user_auth_schema import UserAuthPostRequest, \
 import numpy as np
 
 user_auth_endpoint = Blueprint('login', __name__)
+
+logger = logging.getLogger(__name__)
+handler = BugsnagHandler()
+
+handler.setLevel(logging.ERROR)
+logger.addHandler(handler)
 
 
 @user_auth_endpoint.route("login", methods=["POST"])
@@ -63,5 +72,6 @@ def login():
     except Exception as e:
         error_model = ErrorResponse(errors='unknown error')
         error = error_model.__dict__
+        logger.error(str(e))
 
         return jsonify(error), 500
