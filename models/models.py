@@ -86,7 +86,7 @@ class Issue(db.Model):
                      unique=False,
                      nullable=False)
 
-    description = db.Column(db.String(45),
+    description = db.Column(db.Text(),
                             unique=False,
                             nullable=False)
 
@@ -119,6 +119,61 @@ class Issue(db.Model):
         self.issue_status_id = issue_status_id
         self.project_id = project_id
         self.issue_type_id = issue_type_id
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
+
+class IssueChangeLog(db.Model):
+    """Data model for issue."""
+    __tablename__ = "issue_change_log"
+
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    field_name = db.Column(db.String(45),
+                           unique=False,
+                           nullable=False)
+
+    old_value = db.Column(db.Text(),
+                          unique=False,
+                          nullable=False)
+
+    new_value = db.Column(db.Text(),
+                          unique=False,
+                          nullable=False)
+
+    issue_id = db.Column(db.Integer,
+                         db.ForeignKey("issue.id"),
+                         nullable=False)
+
+    issue = db.relationship("Issue",
+                            backref='issue_change_log',
+                            lazy=True
+                            )
+
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey("user.id"),
+                        nullable=False)
+
+    user = db.relationship("User",
+                           backref='issue_change_log',
+                           lazy=True
+                           )
+
+    created = db.Column(db.DateTime(timezone=True), default=db.func.current_timestamp(), nullable=False)
+    modified = db.Column(db.DateTime(timezone=True), default=db.func.current_timestamp(),
+                         onupdate=db.func.current_timestamp(), nullable=False)
+
+    def __init__(self, field_name=None, old_value=None, new_value=None, issue_id=None, user_id=None):
+        self.field_name = field_name
+        self.old_value = old_value
+        self.new_value = new_value
+        self.issue_id = issue_id
+        self.user_id = user_id
 
 
 class IssueStatus(db.Model):
@@ -173,7 +228,6 @@ class Project(db.Model):
 
     is_deleted = db.Column(db.Boolean,
                            default=False)
-
 
     created_by = db.Column(db.Integer,
                            db.ForeignKey("user.id"),
