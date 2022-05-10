@@ -9,7 +9,7 @@ RUN apt update && apt upgrade -y && apt install -y --no-install-recommends --all
     wget \
     curl \
     python-setuptools \
-    python3 \
+    python3
 
 RUN apt-get install -y python3-pip
 
@@ -17,9 +17,11 @@ RUN pip3 install setuptools
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 
-COPY . /opt
-
 WORKDIR /opt
+
+RUN mkdir gira-app
+
+COPY . /gira-app
 
 RUN pip3 install -r requirements.txt
 
