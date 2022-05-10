@@ -4,7 +4,7 @@ from bugsnag.handlers import BugsnagHandler
 from flask import jsonify, request, Blueprint
 from flask_jwt_extended import create_access_token
 from cerberus import Validator
-from scipy.optimize.tnc import CONSTANT
+from constant import Constant as CONSTANT
 
 from helper.authentication_helper import validate_request_input
 from helper.format_helper import parse_cerberus_error_messages
