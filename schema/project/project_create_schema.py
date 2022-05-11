@@ -1,9 +1,3 @@
-from collections import defaultdict
-from marshmallow import Schema, fields
-
-from schema.info_schema import InfoSchema
-from constant import Constant as CONSTANT
-
 
 class ProjectRequestParameters(object):
     name = 'name'
@@ -20,7 +14,6 @@ class ProjectPostRequest(object):
 
         if ProjectRequestParameters.created_by in payload:
             self.created_by = payload[ProjectRequestParameters.created_by]
-
 
     def __str__(self):
         return str(self.__dict__)

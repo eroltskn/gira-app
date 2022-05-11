@@ -1,8 +1,5 @@
-from collections import defaultdict
-from marshmallow import Schema, fields
-
-from schema.info_schema import InfoSchema
 from constant import Constant as CONSTANT
+
 
 class IssueRequestParameters(object):
     name = 'name'
