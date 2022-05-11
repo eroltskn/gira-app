@@ -25,7 +25,6 @@ from models.models import db
 
 db.init_app(app)
 
-from models.models import Role, UserRole, User, Issue, Project,UserProfile,UserProject
 
 migrate = Migrate(app, db)
 
