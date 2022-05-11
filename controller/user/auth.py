@@ -8,6 +8,7 @@ from sqlalchemy import and_
 
 from helper.authentication_helper import validate_request_input
 from helper.format_helper import parse_cerberus_error_messages
+from helper.password_encryption import PasswordEncryption
 from models.models import User, db
 from schema.error_schema import ErrorResponse
 from schema.user.user_auth_schema import UserAuthPostRequest, \
@@ -43,13 +44,28 @@ def login():
 
             return jsonify(error), 400
 
+        """ password encryption  """
+        password_encryptor = PasswordEncryption()
+
         result = db.session.query(User).filter(
-            and_(User.username == payload_model.username, User.password == payload_model.password)).first()
+            and_(User.username == payload_model.username)).first()
 
         """ Check authentication is success """
         if not result:
             error_model = ErrorResponse(errors=[
                 'Authentication error.'
+            ])
+            error = error_model.__dict__
+
+            return jsonify(error), 401
+
+        """ Check authentication is verified """
+        is_same_pasword = password_encryptor.verify(payload_model.password, result.password)
+
+        """ Check authentication is success """
+        if not is_same_pasword:
+            error_model = ErrorResponse(errors=[
+                'Wrong Pasword .'
             ])
             error = error_model.__dict__
 

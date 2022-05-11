@@ -53,12 +53,12 @@ class UserProfile(db.Model):
 
     first_name = db.Column(db.String(45),
                            index=False,
-                           unique=True,
+                           unique=False,
                            nullable=False)
 
     last_name = db.Column(db.String(45),
                           index=False,
-                          unique=True,
+                          unique=False,
                           nullable=False)
 
     created = db.Column(db.DateTime(timezone=True), default=db.func.current_timestamp(), nullable=False)
@@ -275,7 +275,7 @@ class User(db.Model):
                          index=False,
                          unique=True,
                          nullable=False)
-    password = db.Column(db.String(45),
+    password = db.Column(db.Text(),
                          index=False,
                          unique=False,
                          nullable=False)
