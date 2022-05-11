@@ -5,7 +5,7 @@ from cerberus import Validator
 from bugsnag.handlers import BugsnagHandler
 
 from helper.authentication_helper import validate_request_input, \
-    requires_gira_role
+    requires_gira_role, requires_owner_role
 from helper.format_helper import parse_cerberus_error_messages
 
 from sqlalchemy import and_
@@ -31,6 +31,7 @@ logger.addHandler(handler)
 @issue_api_endpoint.route("issue/<issue_id>", methods=["GET"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1, 2])
 def issue_get_method(issue_id):
     try:
@@ -72,8 +73,9 @@ def issue_get_method(issue_id):
 
 
 @issue_api_endpoint.route("issue", methods=["POST"])
-@validate_request_input
 @jwt_required()
+@validate_request_input
+@requires_owner_role
 @requires_gira_role(roles=[1])
 def issue_post_method():
     try:
@@ -118,6 +120,7 @@ def issue_post_method():
 @issue_api_endpoint.route("issue/<issue_id>", methods=["PATCH"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1, 2])
 def issue_patch_method(issue_id):
     try:
@@ -169,6 +172,7 @@ def issue_patch_method(issue_id):
 @issue_api_endpoint.route("issue/<issue_id>", methods=["DELETE"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1, 2])
 def issue_delete_method(issue_id):
     try:

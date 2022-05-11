@@ -10,7 +10,7 @@ from sqlalchemy.sql.expression import false
 from sqlalchemy import func
 
 from helper.authentication_helper import validate_request_input, \
-    requires_gira_role
+    requires_gira_role, requires_owner_role
 from helper.format_helper import parse_cerberus_error_messages
 
 from schema.error_schema import ErrorResponse
@@ -36,6 +36,7 @@ logger.addHandler(handler)
 @project_api_endpoint.route("project/<project_id>", methods=["GET"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1, 2])
 def project_get_method(project_id):
     try:
@@ -81,6 +82,7 @@ def project_get_method(project_id):
 @project_api_endpoint.route("project", methods=["POST"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1])
 def project_post_method():
     try:
@@ -123,6 +125,7 @@ def project_post_method():
 @project_api_endpoint.route("project/<project_id>", methods=["PATCH"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1, 2])
 def project_update_method(project_id):
     try:
@@ -164,6 +167,7 @@ def project_update_method(project_id):
 @project_api_endpoint.route("project/<project_id>", methods=["DELETE"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1, 2])
 def project_delete_method(project_id):
     try:
@@ -200,6 +204,7 @@ def project_delete_method(project_id):
 @project_api_endpoint.route("project/assign", methods=["POST"])
 @validate_request_input
 @jwt_required()
+@requires_owner_role
 @requires_gira_role(roles=[1])
 def project_assign_post_method():
     try:

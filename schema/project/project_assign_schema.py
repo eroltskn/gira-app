@@ -1,9 +1,3 @@
-from collections import defaultdict
-from marshmallow import Schema, fields
-
-from schema.info_schema import InfoSchema
-
-
 class ProjectAssignRequestParameters(object):
     user_id = 'user_id'
     project_id = 'project_id'
@@ -19,7 +13,6 @@ class ProjectAssignPostRequest(object):
 
         if ProjectAssignRequestParameters.project_id in payload:
             self.project_id = payload[ProjectAssignRequestParameters.project_id]
-
 
     def __str__(self):
         return str(self.__dict__)

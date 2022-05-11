@@ -16,6 +16,16 @@ class UserRole(db.Model):
                         db.ForeignKey("user.id"),
                         primary_key=True)
 
+    user = db.relationship("User",
+                           backref='user_role',
+                           lazy=True
+                           )
+
+    roles = db.relationship("Role",
+                            backref="user_role",
+                            lazy=True,
+                            )
+
     def __init__(self, role_id, user_id):
         self.role_id = role_id
         self.user_id = user_id
@@ -31,6 +41,10 @@ class UserProfile(db.Model):
     user_id = db.Column(db.Integer,
                         db.ForeignKey("user.id"),
                         primary_key=False)
+
+    user = db.relationship("User",
+                           lazy=True,
+                           foreign_keys="UserProfile.user_id")
 
     email = db.Column(db.String(45),
                       index=False,
@@ -65,14 +79,11 @@ class Role(db.Model):
     id = db.Column(db.Integer,
                    primary_key=True,
                    autoincrement=True)
+
     name = db.Column(db.String(45),
                      index=False,
                      unique=True,
                      nullable=False)
-
-    user_role = db.relationship(UserRole,
-                                backref='role',
-                                lazy=True)
 
 
 class Issue(db.Model):
@@ -125,6 +136,7 @@ class Issue(db.Model):
 
     def __setitem__(self, key, value):
         setattr(self, key, value)
+
 
 class IssueChangeLog(db.Model):
     """Data model for issue."""
@@ -268,14 +280,6 @@ class User(db.Model):
                          unique=False,
                          nullable=False)
 
-    user_roles = db.relationship(UserRole,
-                                 backref='user',
-                                 lazy=True)
-
-    user_profile = db.relationship(UserProfile,
-                                   backref='user',
-                                   lazy=True)
-
     def __init__(self, username, password):
         self.username = username
         self.password = password
@@ -285,6 +289,7 @@ class UserProject(db.Model):
     """Data model for user project."""
 
     __tablename__ = "user_project"
+
     project_id = db.Column(db.Integer,
                            db.ForeignKey("project.id"),
                            primary_key=True)

@@ -57,7 +57,7 @@ def login():
 
         additional_claims = {}
 
-        user_roles = result.user_roles
+        user_roles = result.user_role
         roles = np.array([user_role.__dict__['role_id'] for user_role in user_roles]).flatten().tolist()
         additional_claims['roles'] = roles
         additional_claims['user_id'] = result.id
