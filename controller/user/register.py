@@ -8,6 +8,7 @@ from constant import Constant as CONSTANT
 
 from helper.authentication_helper import validate_request_input
 from helper.format_helper import parse_cerberus_error_messages
+from helper.password_encryption import PasswordEncryption
 from models.models import User, UserRole, UserProfile, db
 from schema.error_schema import ErrorResponse
 from schema.user.user_register_schema import USER_REGISTER_POST_REQUEST_SCHEMA
@@ -25,7 +26,7 @@ logger.addHandler(handler)
 
 @user_register_endpoint.route("register", methods=["POST"])
 @validate_request_input
-def login():
+def register_user():
     try:
         """ Request body payload """
         payload = request.json
@@ -42,8 +43,12 @@ def login():
 
             return jsonify(error), 400
 
+        """ password encryption  """
+        password_encryptor = PasswordEncryption()
+        enc_password = password_encryptor.encrypt(payload_model.password)
+
         user = User(username=payload_model.username,
-                    password=payload_model.password)
+                    password=enc_password)
 
         db.session.add(user)
         db.session.flush()
@@ -55,13 +60,17 @@ def login():
                                    last_name=payload_model.last_name)
 
         db.session.add(user_profile)
-        user_role = UserRole(user_id=user.id,
-                             role_id=CONSTANT.USER_DEFAULT_ROLES)
 
-        db.session.add(user_role)
+        for role in CONSTANT.USER_DEFAULT_ROLES:
+            user_role = UserRole(user_id=user.id,
+                                 role_id=role)
+
+            db.session.add(user_role)
+
         db.session.commit()
 
-        gira_token = create_access_token(payload_model.username, additional_claims={'roles': CONSTANT.USER_DEFAULT_ROLES})
+        gira_token = create_access_token(payload_model.username,
+                                         additional_claims={'roles': CONSTANT.USER_DEFAULT_ROLES})
 
         response_model = UserRegisterResponse(gira_token=gira_token)
 
